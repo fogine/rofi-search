@@ -1,14 +1,14 @@
 # rofi-google
 Interactive Google search via [rofi](https://github.com/DaveDavenport/rofi/).  
 
-[![Preview](a/raw/b/rofi-google.gif)](a/raw/b/rofi-google.gif)
-[(click for large preview)](a/raw/b/rofi-google.gif)
+[![Preview](https://github.com/fogine/rofi-google/blob/master/rofi-google.gif)](https://github.com/fogine/rofi-google/blob/master/rofi-google.gif)
+[(click for large preview)](https://github.com/fogine/rofi-google/blob/master/rofi-google.gif)
 
 Installation
 -------------------
 `npm install -g rofi-google`
 
-or copy [rofi-google](a/raw/b/rofi-google) to your `$PATH`
+or copy [rofi-google](/rofi-google) to your `$PATH`
 
 Features
 -------------------
@@ -35,10 +35,10 @@ You can choose between two methods of getting search results. Each one will give
 
     - You will need to go to [https://cse.google.com/cse/all](https://cse.google.com/cse/all) and create your own google custom search engine.
         - Get `Search engine ID` from the settings panel  
-         ![Preview](a/raw/b/search_engine_key.png)
+         ![Preview](https://github.com/fogine/rofi-google/blob/master/search_engine_key.png)
 
     - [Get API KEY](https://developers.google.com/custom-search/v1/introduction#identify_your_application_to_google_with_api_key) for the created search engine.
-        ![Preview](a/raw/b/api_key.png)
+        ![Preview](https://github.com/fogine/rofi-google/blob/master/api_key.png)
 
 
 #### rofi
