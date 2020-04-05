@@ -18,6 +18,7 @@ Features
 
 Dependencies
 -------------------
+* `nodejs >= 6.4.0`
 * [rofi-blocks](https://github.com/OmarCastro/rofi-blocks) (currently it needs patched version that has fix for `utf-8` encoding, you can get it here [patched-rofi-blocks](https://github.com/fogine/rofi-blocks/tree/next))
 * [rofi](https://github.com/DaveDavenport/rofi/)
 * `xclip` copy to clipboard
