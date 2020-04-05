@@ -1,8 +1,8 @@
 # rofi-google
 Interactive Google search via [rofi](https://github.com/DaveDavenport/rofi/).  
 
-[![Preview](https://github.com/fogine/rofi-google/blob/master/rofi-google.gif)](https://github.com/fogine/rofi-google/blob/master/rofi-google.gif)
-[(click for large preview)](https://github.com/fogine/rofi-google/blob/master/rofi-google.gif)
+[![Preview](https://github.com/fogine/rofi-google/blob/master/rofi-google.gif)](https://raw.githubusercontent.com/fogine/rofi-google/master/rofi-google.gif)
+[(click for large preview)](https://raw.githubusercontent.com/fogine/rofi-google/master/rofi-google.gif)
 
 Installation
 -------------------
