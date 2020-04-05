@@ -1,0 +1,10 @@
+node_modules
+.tern-project
+jsconfig.json
+*.vim
+coverage
+logs
+docs
+test.js
+.idea
+deploy_key

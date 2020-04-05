@@ -1,0 +1,24 @@
+{
+  "name": "rofi-google",
+  "version": "0.1.0",
+  "description": "Interactive Google search via rofi",
+  "keywords": [
+      "rofi",
+      "dmenu",
+      "linux",
+      "search"
+  ],
+  "engines": {
+      "node": ">=6.4.0"
+  },
+  "main": "index.js",
+  "author": "fogine",
+  "license": "MIT",
+  "bin": {
+      "rofi-google": "./rofi-google"
+  },
+  "files": [
+      "./rofi-google"
+  ],
+  "dependencies": {}
+}
