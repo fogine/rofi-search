@@ -32,7 +32,7 @@ You can choose between two methods of getting search results. Each one will give
 - Use [googler](https://github.com/jarun/googler) for scraping the web for search results (default behavior)
     - `googler` does not parse information about number of search results
     - slightly slower than the other method which uses official google API
-- Use google's custom search engine API and set `GOOG_API_KEY` & `GOOG_SEARCH_ID` env variables
+- Use google's custom search engine API by setting `GOOG_API_KEY` & `GOOG_SEARCH_ID` env variables
 
     - You will need to go to [https://cse.google.com/cse/all](https://cse.google.com/cse/all) and create your own google custom search engine.
         - Get `Search engine ID` from the settings panel  
