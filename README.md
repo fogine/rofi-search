@@ -73,3 +73,5 @@ You can fetch rofi theme used in the gif preview [HERE](https://github.com/fogin
 #### TODO (PR is welcome)
 
 - [ ] make font sizes configurable
+- [ ] DuckDuckGO integration
+- [ ] [buku](https://github.com/jarun/buku) integration
