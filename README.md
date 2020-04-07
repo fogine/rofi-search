@@ -1,18 +1,22 @@
-# rofi-google
-Interactive Google search via [rofi](https://github.com/DaveDavenport/rofi/).  
+# rofi-search
+Interactive web search via [rofi](https://github.com/DaveDavenport/rofi/).  
+Multiple search engines supported.
 
-[![Preview](https://github.com/fogine/rofi-google/blob/master/rofi-google.gif)](https://raw.githubusercontent.com/fogine/rofi-google/master/rofi-google.gif)
-[(click for large preview)](https://raw.githubusercontent.com/fogine/rofi-google/master/rofi-google.gif)
+[![Preview](https://github.com/fogine/rofi-search/blob/master/rofi-search.gif)](https://raw.githubusercontent.com/fogine/rofi-search/master/rofi-search.gif)
+[(click for large preview)](https://raw.githubusercontent.com/fogine/rofi-search/master/rofi-search.gif)
 
 Installation
 -------------------
-`npm install -g rofi-google`
+`npm install -g rofi-search`
 
-or copy [rofi-google](/rofi-google) to your `$PATH`
+or copy [rofi-search](/rofi-search) to your `$PATH`
 
 Features
 -------------------
 * search as you type
+* Google search
+* DuckDuckGo search
+* get top search results from multiple search engines
 * copy search result website url
 * open search result in web browser
 
@@ -22,48 +26,81 @@ Dependencies
 * [rofi-blocks](https://github.com/OmarCastro/rofi-blocks) (currently it needs patched version that has fix for `utf-8` encoding, you can get it here [patched-rofi-blocks](https://github.com/fogine/rofi-blocks/tree/next))
 * [rofi](https://github.com/DaveDavenport/rofi/)
 * `xclip` copy to clipboard
-* [googler](https://github.com/jarun/googler) *(optional)*  
+* [googler](https://github.com/jarun/googler) *(optional)*  google search results scraper
+* [ddgr](https://github.com/jarun/ddgr) *(optional)*  DuckDuckGo search results scraper
 
 Usage
 ------------------
 
-You can choose between two methods of getting search results. Each one will give slightly different results.  
+You can choose between multiple methods of getting search results. Each one will give slightly different results.  
+You can even let `rofi-search` combine search results from multiple search engines.
 
-- Use [googler](https://github.com/jarun/googler) for scraping the web for search results (default behavior)
+- Use [googler](https://github.com/jarun/googler) for scraping Google for search results
     - `googler` does not parse information about number of search results
-    - slightly slower than the other method which uses official google API
-- Use google's custom search engine API by setting `GOOG_API_KEY` & `GOOG_SEARCH_ID` env variables
+        so this information is not currently available when using this method
+- Use [ddgr](https://github.com/jarun/ddgr) for scraping DuckDuckGo for search results
+    - `ddgr` does not parse information about number of search results
+        so this information is not currently available when using this method
+- Use google's custom search engine API by setting `GOOGLE_API_KEY` & `GOOGLE_SEARCH_ID` env variables
 
     - You will need to go to [https://cse.google.com/cse/all](https://cse.google.com/cse/all) and create your own google custom search engine.
         - Get `Search engine ID` from the settings panel  
-         ![Preview](https://github.com/fogine/rofi-google/blob/master/search_engine_key.png)
+         ![Preview](https://github.com/fogine/rofi-search/blob/master/search_engine_key.png)
 
     - [Get API KEY](https://developers.google.com/custom-search/v1/introduction#identify_your_application_to_google_with_api_key) for the created search engine.
-        ![Preview](https://github.com/fogine/rofi-google/blob/master/api_key.png)
+        ![Preview](https://github.com/fogine/rofi-search/blob/master/api_key.png)
 
+#### Examples
 
-#### rofi
-
+##### Google CSE
 ```bash
-#either use custom search engine
-export GOOG_API_KEY='google-api-key'
-export GOOG_SEARCH_ID='google-search-engine-id'
+export GOOGLE_API_KEY='google-api-key'
+export GOOGLE_SEARCH_ID='google-search-engine-id'
+export ROFI_SEARCH='cse'
 
-#or optionaly set additional googler options (see googler --help)
-export GOOGLER_ARGS='["--count", 5]'
-
-
-#TITLE_COLOR allows you to customize search results title color (default blue),
-#as this can't be set via rofi theme
-export TITLE_COLOR='#3296c8'
-
-rofi -modi blocks -blocks-wrap rofi-google -show blocks \ 
+rofi -modi blocks -blocks-wrap rofi-search -show blocks \ 
 -lines 4 -eh 4 -kb-custom-1 'Control+y' -theme /path/to/your/theme.rasi
 ``` 
 
-You can fetch rofi theme used in the gif preview [HERE](https://github.com/fogine/dotfiles/blob/master/rofi/google_theme.css)
+##### googler
+```bash
+#for additional googler options see "googler --help"
+export GOOGLE_ARGS='["--count", 5]'
+export ROFI_SEARCH='googler'
 
-##### supported actions
+rofi -modi blocks -blocks-wrap rofi-search -show blocks \ 
+-lines 4 -eh 4 -kb-custom-1 'Control+y' -theme /path/to/your/theme.rasi 
+``` 
+
+##### combine top free results from DuckDuckGo and Google
+```bash
+export DDG_ARGS='["-n", 3]'
+export GOOGLE_ARGS='["--count", 3]'
+export ROFI_SEARCH='cse,ddgr'
+
+rofi -modi blocks -blocks-wrap rofi-search -show blocks \ 
+-lines 4 -eh 4 -kb-custom-1 'Control+y' -theme /path/to/your/theme.rasi
+``` 
+
+You can fetch rofi theme used in the gif preview [HERE](https://github.com/fogine/dotfiles/blob/master/rofi/google_theme.css)  
+
+
+Options
+-----------
+- `GOOGLE_API_KEY` - secret key to access Google API. You can get it [here](https://developers.google.com/custom-search/v1/introduction#identify_your_application_to_google_with_api_key)
+- `GOOGLE_SEARCH_ID` - Your custom search engine (cse) ID
+- `GOOGLE_ARGS` - `googler` command line arguments. Serialized json array.
+- `DDG_ARGS` - `ddgr` command line arguments. Serialized json array.
+- `ROFI_SEARCH` - comma separated search methods
+    - Supported methods: `cse`,`googler`,`ddgr`
+    - If multiple methods are set, `rofi-search` will make multiple parallel searches
+    and combine search results in the order search methods were defined
+- `TITLE_COLOR` - customize search result title color (default blue).
+                This can't be set in rofi theme
+- `ROFI_SEARCH_TIMEOUT` - integer - delay between last character typed and automatic search execution (default `500`ms)
+- `ROFI_SEARCH_DEBUG` - enables verbose logging if set to any value
+
+##### supported rofi actions
 
 - `-kb-accept-entry` - open url with `xdg-open` (aka. your default browser)
 - `-kb-accept-custom` - open search results on `google.com` in your browser
@@ -72,6 +109,6 @@ You can fetch rofi theme used in the gif preview [HERE](https://github.com/fogin
 
 #### TODO (PR is welcome)
 
+- [x] ~~DuckDuckGO integration~~
 - [ ] make font sizes configurable
-- [ ] DuckDuckGO integration
 - [ ] [buku](https://github.com/jarun/buku) integration

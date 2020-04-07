@@ -10,28 +10,20 @@ const EventEmitter  = require('events');
 const fs            = require('fs');
 const https         = require('https')
 
-const APP_NAME = 'rofi-google';
+const APP_NAME = 'rofi-search';
 const $HOME = process.env.HOME;
 const $XDG_CACHE_HOME = process.env.XDG_CACHE_HOME;
 const TITLE_COLOR = process.env.TITLE_COLOR || '#3296c8';
-let $GOOGLER_ARGS = process.env.GOOGLER_ARGS || '[]';
+const ROFI_SEARCH_TIMEOUT = parseInt(process.env.ROFI_SEARCH_TIMEOUT) || 500;
 
 const CACHE_DIR_PATH = ($XDG_CACHE_HOME || ($HOME + "/.cache")) + '/' + APP_NAME;
 const CACHE_FILE_PATH = `${CACHE_DIR_PATH}/last_search.json`;
 
-
-if ($GOOGLER_ARGS) {
-    try {
-        $GOOGLER_ARGS = JSON.parse($GOOGLER_ARGS);
-        if (!Array.isArray($GOOGLER_ARGS)) {
-            throw new Error('GOOGLER_ARGS env variable is not valid json array');
-        }
-    } catch(e) {
-        console.error('Failed to parse GOOGLER_ARGS env variable.');
-        console.error(e);
-        process.exit(1);
-    }
-}
+const SearchMethods = Object.freeze({
+    CSE: 'cse',
+    GOOGLER: 'googler',
+    DDGR: 'ddgr'
+});
 
 /**
  */
@@ -42,11 +34,21 @@ function main() {
     });
 
     const search = new Search({
-        apiKey: process.env.GOOG_API_KEY,
+        apiKey: process.env.GOOGLE_API_KEY,
         //search engine id
-        cx: process.env.GOOG_SEARCH_ID,
+        cx: process.env.GOOGLE_SEARCH_ID,
         rofi: rofi
     });
+
+    search.on('error', function(err) {
+        if (process.env.ROFI_SEARCH_DEBUG) { //verbose logging
+            console.error(err);
+        } else {
+            console.error(err.message);
+        }
+        process.exit(1);
+    });
+
     search.on('search-result', function(data) {
         rofi.setData(data);
         rofi.updateListView();
@@ -68,7 +70,6 @@ function main() {
 
         while (data = this.read()) {
 
-            //console.error(data);
             const messages = data.split('\n');
             messages.forEach(function(message) {
                 if (message) {
@@ -283,7 +284,7 @@ function prettyPrintUrl(url) {
 
 /*
  *
- *===========================GOOGLE SEARCH HTTP=========================
+ *===========================GOOGLE/DDG SEARCH=========================
  */
 
 /**
@@ -314,12 +315,16 @@ Search.prototype.query = function query(q) {
         clearTimeout(this.timeoutID);
     }
 
-    this.timeoutID = setTimeout(_search, 500);
+    this.timeoutID = setTimeout(_search, ROFI_SEARCH_TIMEOUT);
 
     async function _search() {
-        const data = await self.getSearchResults(options);
-        self.emit('search-result', data);
-        self.saveCache(data);
+        try {
+            const data = await self.getSearchResults(options);
+            self.emit('search-result', data);
+            self.saveCache(data);
+        } catch(e) {
+            self.emit('error', e);
+        }
     }
 }
 
@@ -328,74 +333,135 @@ Search.prototype.query = function query(q) {
  * @param {Object} options
  * @return {Promise<Object>}
  */
-Search.prototype.getSearchResults = async function(options) {
-    if (this.options.key) {
-        //use custom google search engine
-        return await this.customEngineSearch(options)
-    } else {
-        //use googler utility
-        return await this.googlerSearch(options.q)
-    }
+Search.prototype.getSearchResults = async function getSearchResults(options) {
+    const self = this;
+    const engines = getPreferedSearchMethods();
+
+    let promiseList = engines.reduce(function(promiseList, engine) {
+        let args, p;
+        switch (engine) {
+            case SearchMethods.CSE:
+                args = parseJsonEnv('GOOGLE_ARGS');
+                if (args.includes('--count')) {
+                    options.num = args[args.indexOf('--count')+1];
+                } else if (args.includes('-n')) {
+                    options.num = args[args.indexOf('-n')+1];
+                }
+
+                p = self.customEngineSearch(options);
+                break;
+            case SearchMethods.GOOGLER:
+                args = parseJsonEnv('GOOGLE_ARGS').concat(['--json', `${options.q}`]);
+                p = self._spawnChildProcess('googler', args).then(function(data) {
+                    return self._parseGooglerResults(data);
+                });
+                break;
+            case SearchMethods.DDGR:
+                args = parseJsonEnv('DDG_ARGS').concat(['-x','--json', `${options.q}`]);
+                p = self._spawnChildProcess('ddgr', args).then(function(data) {
+                    return self._parseDDGRResults(data);
+                });
+                break;
+        }
+
+        if (p) {
+            promiseList.push(p);
+        }
+        return promiseList;
+    }, []);
+
+    return Promise.all(promiseList).then(function(results) {
+        //return Array.prototype.concat.apply([], results);
+        return results.reduce(function(flatResults, engineResults) {
+            Array.prototype.push.apply(flatResults.items, engineResults.items);
+            return flatResults;
+        }, {
+            searchInformation: results[0].searchInformation,
+            items: []
+        });
+    });
 };
 
 
 /**
- * @param {String} q
+ * @return {Object}
+ */
+Search.prototype._parseGooglerResults = function _parseGooglerResults(data) {
+    let urlBuffer = [];
+    data = JSON.parse(data).map(function(item) {
+        //remove duplicates
+        if (urlBuffer.includes(item.url)) {
+            return;
+        }
+
+        urlBuffer.push(item.url);
+        if (item.metadata) {
+            let metadataSegments = item.metadata.split(',');
+            //prepend data information
+            //so its in the same format as search results from google API
+            item.abstract =  metadataSegments[0] + ' ... ' + item.abstract;
+        }
+        return {
+            link: item.url,
+            snippet: item.abstract,
+            title: item.title
+        };
+    }).filter(trimArr);
+
+    data = {
+        searchInformation: {
+            formattedSearchTime: '&lt;unavaible&gt;',
+            formattedTotalResults: '&lt;unavaible&gt;'
+        },
+        items: data
+    };
+
+    return data;
+};
+
+/**
+ * @return {Object}
+ */
+Search.prototype._parseDDGRResults = function _parseDDGRResults(data) {
+    //TODO remove once ddgr version >1.7-1 will be released
+    data = data.slice(data.indexOf('[\n  {'));
+    return this._parseGooglerResults(data);
+};
+
+
+/**
+ * @param {String} executable - googler|ddgr
+ * @param {Array<String>} args - to be provided to the executable
  * @return {Promise<Object>}
  */
-Search.prototype.googlerSearch = function(q) {
+Search.prototype._spawnChildProcess = function(executable, args) {
     return new Promise(function(resolve, reject) {
         let stdout = '';
         let stderr = '';
-        let args = $GOOGLER_ARGS.concat(['--json', `${q}`]);
 
-        const googler = child_process.spawn('googler', args);
+        const proc = child_process.spawn(executable, args);
 
-        googler.stdout.on('data', function(chunk) {
+        proc.stdout.on('data', function(chunk) {
             stdout += chunk.toString();
         });
 
-        googler.stderr.on('data', function(chunk) {
+        proc.stderr.on('data', function(chunk) {
             stderr += chunk.toString();
         })
 
-        googler.once('close', function(status) {
+        proc.once('close', function(status) {
             if (status !== 0) {
                 return reject(stderr);
             }
 
-            let urlBuffer = [];
-            stdout = JSON.parse(stdout).map(function(item) {
-                //remove duplicates
-                if (urlBuffer.includes(item.url)) {
-                    return;
-                }
-
-                urlBuffer.push(item.url);
-                if (item.metadata) {
-                    let metadataSegments = item.metadata.split(',');
-                    //prepend data information
-                    //so its in the same format as search results from google API
-                    item.abstract =  metadataSegments[0] + ' ... ' + item.abstract;
-                }
-                return {
-                    link: item.url,
-                    snippet: item.abstract,
-                    title: item.title
-                };
-            }).filter(trimArr);
-
-            return resolve({
-                searchInformation: {
-                  formattedSearchTime: '&lt;unavaible&gt;',
-                  formattedTotalResults: '&lt;unavaible&gt;'
-                },
-                items: stdout
-            });
+            return resolve(stdout);
         });
 
-        googler.once('error', function(err) {
-            reject(err);
+        proc.once('error', function(err) {
+            if (err.code === 'ENOENT') {
+                return reject(new Error(`Can not find "${executable}" executable.`));
+            }
+            return reject(err);
         });
     });
 };
@@ -481,6 +547,53 @@ Search.prototype.loadCache = function loadCache() {
  *
  *===========================UTILS=========================
  */
+
+
+/**
+ * @return {Array}
+ */
+function parseJsonEnv(envVarName) {
+
+    let args = process.env[envVarName] || '[]';
+    try {
+        args = JSON.parse(args);
+        if (!Array.isArray(args)) {
+            throw new Error(`${envVarName} env variable is not valid json array`);
+        }
+        return args;
+    } catch(e) {
+        console.error(`Failed to parse ${envVarName} env variable.`);
+        console.error(e);
+        process.exit(1);
+    }
+}
+
+/**
+ * @return {Array<String>}
+ */
+function getPreferedSearchMethods() {
+    let methods = (process.env.ROFI_SEARCH || '').split(',');
+    let supportedMethods = [
+        SearchMethods.CSE,
+        SearchMethods.GOOGLER,
+        SearchMethods.DDGR
+    ];
+
+    methods = methods.filter(function(searchMethod) {
+        return supportedMethods.includes(searchMethod);
+    });
+
+    if (methods.length) {
+        return methods;
+    } else {
+        //return search method fallback
+        if (process.env.GOOGLE_API_KEY && process.env.GOOGLE_SEARCH_ID) {
+            return [SearchMethods.CSE];
+        } else {
+            return [SearchMethods.GOOGLER];
+        }
+    }
+}
 
 /**
  * @param {String} url
