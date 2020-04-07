@@ -1,12 +1,14 @@
 {
-  "name": "rofi-google",
-  "version": "0.1.0",
-  "description": "Interactive Google search via rofi",
+  "name": "rofi-search",
+  "version": "0.2.0",
+  "description": "Interactive web search via rofi",
   "keywords": [
       "rofi",
       "dmenu",
       "linux",
-      "search"
+      "search",
+      "google",
+      "duckduckgo"
   ],
   "engines": {
       "node": ">=6.4.0"
@@ -15,10 +17,10 @@
   "author": "fogine",
   "license": "MIT",
   "bin": {
-      "rofi-google": "./rofi-google"
+      "rofi-search": "./rofi-search"
   },
   "files": [
-      "./rofi-google"
+      "./rofi-search"
   ],
   "dependencies": {}
 }
