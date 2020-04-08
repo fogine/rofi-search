@@ -16,7 +16,7 @@ Features
 * search as you type
 * Google search
 * DuckDuckGo search
-* `I'm Feeling Lucky` - Open the first result directly without waiting for the results
+* `I'm Feeling Lucky` - Open the first result directly without waiting for the results to render
 * get top search results from multiple search engines
 * copy search result website url
 * open search result in web browser
