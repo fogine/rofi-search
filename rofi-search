@@ -379,7 +379,27 @@ Search.prototype.getSearchResults = async function getSearchResults(options) {
             searchInformation: results[0].searchInformation,
             items: []
         });
+    }).then(function(data) {
+        return self._removeDuplicates(data);
     });
+};
+
+/**
+ * removes search result duplicates
+ * @param {Object} data
+ * @return {Object}
+ */
+Search.prototype._removeDuplicates = function _removeDuplicates(data) {
+    let urlBuffer = [];
+    data.items = data.items.filter(function(item) {
+        //remove duplicates
+        if (urlBuffer.includes(item.link)) {
+            return false;
+        }
+        urlBuffer.push(item.link);
+        return true
+    });
+    return data;
 };
 
 
@@ -387,14 +407,7 @@ Search.prototype.getSearchResults = async function getSearchResults(options) {
  * @return {Object}
  */
 Search.prototype._parseGooglerResults = function _parseGooglerResults(data) {
-    let urlBuffer = [];
     data = JSON.parse(data).map(function(item) {
-        //remove duplicates
-        if (urlBuffer.includes(item.url)) {
-            return;
-        }
-
-        urlBuffer.push(item.url);
         if (item.metadata) {
             let metadataSegments = item.metadata.split(',');
             //prepend data information
