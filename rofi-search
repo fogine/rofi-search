@@ -84,14 +84,31 @@ function main() {
         search.query(value);
     });
 
-
     process.stdin.on('select entry', function(value) {
+        if (search.q !== search.last_q) {
+            /*
+             * if search query has changed, wait until search results are updated
+             * and then select first entry
+             */
+            return rofi.queueSelectFirstSearchResult();
+        }
         const searchResult = rofi.getMatchingRecord(value);
         xdgOpen(searchResult.link);
         process.exit(0);
     });
 
     process.stdin.on('execute custom input', function(value) {
+        if (!value || !rofi.data) {
+            /*
+             * Makes sure that the first search result is opened when enter
+             * is pressed after search query.
+             * This handles the case where enter is pressed before search
+             * results are available which would normally result in
+             * opening google page with the search query
+             */
+            return rofi.queueSelectFirstSearchResult();
+        }
+        //ctrl-enter executes search query on google.com
         xdgOpen(getGoogleSearchUrl(value));
         process.exit(0);
     });
@@ -127,7 +144,7 @@ function main() {
  */
 function Rofi(config) {
     this.config = config || {};
-    this.data = null; // google search api response object
+    this.data = null; // object with search api results
     this.message = {
         prompt: 'search',
         "input action": "send"
@@ -137,6 +154,8 @@ function Rofi(config) {
     process.stdout.setDefaultEncoding('utf8');
 }
 
+Rofi.prototype = Object.create(EventEmitter.prototype);
+Rofi.prototype.constructor = Rofi;
 
 /**
  * @param {Object} data
@@ -144,6 +163,17 @@ function Rofi(config) {
  */
 Rofi.prototype.setData = function(data) {
     this.data = data;
+};
+
+
+/**
+ * @return {Object|null}
+ */
+Rofi.prototype.getFirstSearchRecord = function() {
+    if (!this.data || !Array.isArray(this.data.items)) {
+        return null;
+    }
+    return this.data.items[0];
 };
 
 
@@ -165,6 +195,18 @@ Rofi.prototype.getMatchingRecord = function(selectedText) {
     return this.data.items[i];
 };
 
+
+/**
+ * @return {undefined}
+ */
+Rofi.prototype.queueSelectFirstSearchResult = function() {
+    return this.once('after-update', function() {
+        const searchResult = this.getFirstSearchRecord();
+        xdgOpen(searchResult.link);
+        process.exit(0);
+    });
+};
+
 /**
  * write
  * @param {Object} data
@@ -183,6 +225,7 @@ Rofi.prototype.write = function(data) {
         //console.error(JSON.stringify(this.message));
         process.stdout.write(JSON.stringify(this.message));
         process.stdout.write('\n');
+        this.emit('after-update');
     }, 0);
 };
 
@@ -295,8 +338,10 @@ function prettyPrintUrl(url) {
 function Search(config) {
     this.options = {
         key: config.apiKey,
-        cx: config.cx,
+        cx: config.cx
     };
+    this.q = ''; //current query
+    this.last_q = ''; //last query
     this.timeoutID = null;
 }
 
@@ -309,6 +354,7 @@ Search.prototype.constructor = Search;
 Search.prototype.query = function query(q) {
 
     const self = this;
+    this.q = q;
     const options = Object.assign({q}, this.options);
 
     if (this.timeoutID) {
@@ -320,6 +366,7 @@ Search.prototype.query = function query(q) {
     async function _search() {
         try {
             const data = await self.getSearchResults(options);
+            self.last_q = q;
             self.emit('search-result', data);
             self.saveCache(data);
         } catch(e) {
