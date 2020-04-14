@@ -41,7 +41,7 @@ function main() {
     });
 
     search.on('error', function(err) {
-        if (process.env.ROFI_SEARCH_DEBUG) { //verbose logging
+        if (isDebugModeEnabled()) { //verbose logging
             console.error(err);
         } else {
             console.error(err.message);
@@ -74,6 +74,10 @@ function main() {
             messages.forEach(function(message) {
                 if (message) {
                     message = JSON.parse(message);
+                    if (isDebugModeEnabled()) {
+                        console.error(`emmiting event name ${message.name}`);
+                        console.error(`emmiting event value ${message.value}`);
+                    }
                     this.emit(message.name, message.value);
                 }
             }, this);
@@ -608,6 +612,12 @@ Search.prototype.loadCache = function loadCache() {
  *===========================UTILS=========================
  */
 
+/**
+ * @return {boolean}
+ */
+function isDebugModeEnabled() {
+    return !!process.env.ROFI_SEARCH_DEBUG;
+}
 
 /**
  * @return {Array}
