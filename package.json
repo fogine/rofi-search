@@ -20,7 +20,7 @@
       "rofi-search": "./rofi-search"
   },
   "files": [
-      "./rofi-search"
+      "rofi-search"
   ],
   "dependencies": {}
 }
