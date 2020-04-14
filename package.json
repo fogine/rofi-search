@@ -11,7 +11,7 @@
       "duckduckgo"
   ],
   "engines": {
-      "node": ">=6.4.0"
+      "node": ">=8.2.1"
   },
   "main": "index.js",
   "author": "fogine",
