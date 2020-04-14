@@ -369,6 +369,10 @@ Search.prototype.query = function query(q) {
 
     async function _search() {
         try {
+            //ddgr crashes when invoced with empty string
+            if (!q) {
+                return;
+            }
             const data = await self.getSearchResults(options);
             self.last_q = q;
             self.emit('search-result', data);
