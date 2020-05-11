@@ -23,8 +23,8 @@ Features
 
 Dependencies
 -------------------
-* `nodejs >= 6.4.0`
-* [rofi-blocks](https://github.com/OmarCastro/rofi-blocks) (currently it needs patched version that has fix for `utf-8` encoding, you can get it here [patched-rofi-blocks](https://github.com/fogine/rofi-blocks/tree/next))
+* `nodejs >= 8.2.1`
+* [rofi-blocks](https://github.com/OmarCastro/rofi-blocks) (`rofi-blocks-git` package in AUR)
 * [rofi](https://github.com/DaveDavenport/rofi/)
 * `xclip` copy to clipboard
 * [googler](https://github.com/jarun/googler) *(optional)*  google search results scraper
