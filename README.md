@@ -62,7 +62,7 @@ export GOOGLE_API_KEY='google-api-key'
 export GOOGLE_SEARCH_ID='google-search-engine-id'
 export ROFI_SEARCH='cse'
 
-rofi -modi blocks -blocks-wrap rofi-search -show blocks \ 
+rofi -modi blocks -blocks-wrap /absolute/path/to/rofi-search -show blocks \ 
 -lines 4 -eh 4 -kb-custom-1 'Control+y' -theme /path/to/your/theme.rasi
 ``` 
 
@@ -72,7 +72,7 @@ rofi -modi blocks -blocks-wrap rofi-search -show blocks \
 export GOOGLE_ARGS='["--count", 5]'
 export ROFI_SEARCH='googler'
 
-rofi -modi blocks -blocks-wrap rofi-search -show blocks \ 
+rofi -modi blocks -blocks-wrap /absolute/path/to/rofi-search -show blocks \ 
 -lines 4 -eh 4 -kb-custom-1 'Control+y' -theme /path/to/your/theme.rasi 
 ``` 
 
@@ -82,7 +82,7 @@ export DDG_ARGS='["-n", 3]'
 export GOOGLE_ARGS='["--count", 3]'
 export ROFI_SEARCH='cse,ddgr'
 
-rofi -modi blocks -blocks-wrap rofi-search -show blocks \ 
+rofi -modi blocks -blocks-wrap /absolute/path/to/rofi-search -show blocks \ 
 -lines 4 -eh 4 -kb-custom-1 'Control+y' -theme /path/to/your/theme.rasi
 ``` 
 
