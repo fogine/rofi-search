@@ -80,7 +80,7 @@ rofi -modi blocks -blocks-wrap /absolute/path/to/rofi-search -show blocks \
 ```bash
 export DDG_ARGS='["-n", 3]'
 export GOOGLE_ARGS='["--count", 3]'
-export ROFI_SEARCH='cse,ddgr'
+export ROFI_SEARCH='googler,ddgr' #or 'cse,ddgr'
 
 rofi -modi blocks -blocks-wrap /absolute/path/to/rofi-search -show blocks \ 
 -lines 4 -eh 4 -kb-custom-1 'Control+y' -theme /path/to/your/theme.rasi
