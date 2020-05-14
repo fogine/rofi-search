@@ -7,7 +7,9 @@ Multiple search engines supported.
 
 Installation
 -------------------
-`npm install -g rofi-search`
+**AUR** package [rofi-search](https://aur.archlinux.org/packages/rofi-search-git/)  
+
+or `npm install -g rofi-search`
 
 or copy [rofi-search](/rofi-search) to your `$PATH`
 
