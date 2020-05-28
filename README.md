@@ -46,7 +46,7 @@ You can even let `rofi-search` combine search results from multiple search engin
         so this information is not currently available when using this method
 - Use google's custom search engine API by setting `GOOGLE_API_KEY` & `GOOGLE_SEARCH_ID` env variables
 
-    - It can Search the entire web if you set enable it in settings
+    - It can Search the entire web if you enable it in settings
     - You will need to go to [https://cse.google.com/cse/all](https://cse.google.com/cse/all) and create your own google custom search engine.
         - Get `Search engine ID` from the settings panel  
          ![Preview](https://github.com/fogine/rofi-search/blob/master/search_engine_key.png)
@@ -103,6 +103,8 @@ Options
                 This can't be set in rofi theme
 - `ROFI_SEARCH_TIMEOUT` - integer - delay between last character typed and automatic search execution (default `500`ms)
 - `ROFI_SEARCH_DEBUG` - enables verbose logging if set to any value
+- `ROFI_SEARCH_CMD` - a command to execute when pressing `-kb-accept-entry` (`enter`) - defaults to `xdg-open`
+    - example: `export ROFI_SEARCH_CMD='google-chrome $URL'`
 
 ##### supported rofi actions
 

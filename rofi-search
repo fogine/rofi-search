@@ -15,6 +15,7 @@ const $HOME = process.env.HOME;
 const $XDG_CACHE_HOME = process.env.XDG_CACHE_HOME;
 const TITLE_COLOR = process.env.TITLE_COLOR || '#3296c8';
 const ROFI_SEARCH_TIMEOUT = parseInt(process.env.ROFI_SEARCH_TIMEOUT) || 500;
+const ROFI_SEARCH_CMD = process.env.ROFI_SEARCH_CMD;
 
 const CACHE_DIR_PATH = ($XDG_CACHE_HOME || ($HOME + "/.cache")) + '/' + APP_NAME;
 const CACHE_FILE_PATH = `${CACHE_DIR_PATH}/last_search.json`;
@@ -674,8 +675,14 @@ function getPreferedSearchMethods() {
  * @return stdout
  */
 function xdgOpen(url) {
-    const xdgOpen = child_process.spawn('xdg-open', [url]);
-    xdgOpen.on('close', exit);
+    if (ROFI_SEARCH_CMD) {
+        child_process.exec(ROFI_SEARCH_CMD, {
+            env: Object.assign({URL: url}, process.env)
+        }, exit);
+    } else {
+        const xdgOpen = child_process.spawn('xdg-open', [url]);
+        xdgOpen.on('close', exit);
+    }
 }
 
 function exit() {
