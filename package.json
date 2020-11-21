@@ -1,6 +1,6 @@
 {
   "name": "rofi-search",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "description": "Interactive web search via rofi",
   "keywords": [
       "rofi",
