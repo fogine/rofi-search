@@ -32,6 +32,11 @@ Dependencies
 * [googler](https://github.com/jarun/googler) *(optional)*  google search results scraper
 * [ddgr](https://github.com/jarun/ddgr) *(optional)*  DuckDuckGo search results scraper
 
+HOW TO RUN
+-------------------
+Simply execute `rofi-search` in terminal (needs `googler` dependency to be installed).  
+Or see **Usage** section bellow for more advanced use cases.
+
 Usage
 ------------------
 
