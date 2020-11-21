@@ -86,7 +86,7 @@ rofi -modi blocks -blocks-wrap /absolute/path/to/rofi-search -show blocks \
 -lines 4 -eh 4 -kb-custom-1 'Control+y' -theme /path/to/your/theme.rasi
 ``` 
 
-You can fetch rofi theme used in the gif preview [HERE](https://github.com/fogine/dotfiles/blob/master/rofi/google_theme.css)  
+You can fetch rofi theme used in the gif preview [HERE](https://github.com/fogine/rofi-search/blob/master/theme.rasi)  
 
 
 Options
