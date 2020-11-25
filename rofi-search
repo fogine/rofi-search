@@ -13,7 +13,7 @@ const https         = require('https')
 const APP_NAME = 'rofi-search';
 const $HOME = process.env.HOME;
 const $XDG_CACHE_HOME = process.env.XDG_CACHE_HOME;
-const TITLE_COLOR = process.env.TITLE_COLOR || '#3296c8';
+const TITLE_COLOR = process.env.TITLE_COLOR || '#6CB6DA';
 const ROFI_SEARCH_TIMEOUT = parseInt(process.env.ROFI_SEARCH_TIMEOUT) || 500;
 const ROFI_SEARCH_CMD = process.env.ROFI_SEARCH_CMD;
 
@@ -246,7 +246,10 @@ Rofi.prototype.updateMessageView = function updateMessageView() {
     }
 
     const context = this.data.searchInformation;
-    const message = `<span size="x-small">About ${context.formattedTotalResults} results (${context.formattedSearchTime} seconds)</span>`;
+    let message='';
+    if (context.formattedTotalResults) {
+        message = `<span size="x-small">About ${context.formattedTotalResults} results (${context.formattedSearchTime} seconds)</span>`;
+    }
 
     this.write({message: message});
 };
@@ -290,6 +293,7 @@ Rofi.prototype.updateListView = function updateListView() {
 
         searchResults.push({
             text: text,
+            urgent: index < 2 ? true : false,
             markup: true
         });
     }, this);
@@ -482,8 +486,8 @@ Search.prototype._parseGooglerResults = function _parseGooglerResults(data) {
 
     data = {
         searchInformation: {
-            formattedSearchTime: '&lt;unavaible&gt;',
-            formattedTotalResults: '&lt;unavaible&gt;'
+            formattedSearchTime: '',
+            formattedTotalResults: ''
         },
         items: data
     };
