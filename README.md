@@ -34,7 +34,7 @@ Dependencies
 
 HOW TO RUN
 -------------------
-Simply execute `rofi-search` in terminal (needs `googler` dependency to be installed).  
+Simply execute `rofi-search` in terminal (needs `googler` or `ddgr` dependency to be installed).  
 Or see **Usage** section bellow for more advanced use cases.
 
 Usage
