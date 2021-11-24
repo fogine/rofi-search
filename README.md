@@ -61,6 +61,8 @@ You can even let `rofi-search` combine search results from multiple search engin
 
 #### Examples
 
+**NOTE:** In the following examples, to be able to pass `rofi-search` to `rofi` and execute it with custom configuration, env configuration variable `ROFI_SEARCH` is required to be set.  
+
 ##### Google CSE
 ```bash
 export GOOGLE_API_KEY='google-api-key'
