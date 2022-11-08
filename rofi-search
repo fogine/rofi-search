@@ -22,7 +22,6 @@ const CACHE_FILE_PATH = `${CACHE_DIR_PATH}/last_search.json`;
 
 const SearchMethods = Object.freeze({
     CSE: 'cse',
-    GOOGLER: 'googler',
     DDGR: 'ddgr'
 });
 
@@ -413,12 +412,6 @@ Search.prototype.getSearchResults = async function getSearchResults(options) {
 
                 p = self.customEngineSearch(options);
                 break;
-            case SearchMethods.GOOGLER:
-                args = parseJsonEnv('GOOGLE_ARGS').concat(['--json', `${options.q}`]);
-                p = self._spawnChildProcess(SearchMethods.GOOGLER, args).then(function(data) {
-                    return self._parseGooglerResults(data);
-                });
-                break;
             case SearchMethods.DDGR:
                 args = parseJsonEnv('DDG_ARGS').concat(['-x','--json', `${options.q}`]);
                 p = self._spawnChildProcess(SearchMethods.DDGR, args).then(function(data) {
@@ -465,7 +458,6 @@ Search.prototype._removeDuplicates = function _removeDuplicates(data) {
     return data;
 };
 
-
 /**
  * @return {Object}
  */
@@ -506,7 +498,7 @@ Search.prototype._parseDDGRResults = function _parseDDGRResults(data) {
 
 
 /**
- * @param {String} executable - googler|ddgr
+ * @param {String} executable - ddgr
  * @param {Array<String>} args - to be provided to the executable
  * @return {Promise<Object>}
  */
@@ -657,7 +649,6 @@ function getPreferedSearchMethods() {
     let methods = (process.env.ROFI_SEARCH || '').split(',');
     let supportedMethods = [
         SearchMethods.CSE,
-        SearchMethods.GOOGLER,
         SearchMethods.DDGR
     ];
 
@@ -672,7 +663,7 @@ function getPreferedSearchMethods() {
         if (process.env.GOOGLE_API_KEY && process.env.GOOGLE_SEARCH_ID) {
             return [SearchMethods.CSE];
         } else {
-            return [SearchMethods.GOOGLER];
+            return [SearchMethods.DDGR];
         }
     }
 }
@@ -734,17 +725,12 @@ function runRofiSearchWithDeafultConfig() {
  */
 function getDefaultSearchMethod() {
     try {
-        child_process.execSync(`which ${SearchMethods.GOOGLER}`, {stdio: [null, null, null]})
-        return SearchMethods.GOOGLER;
+        child_process.execSync(`which ${SearchMethods.DDGR}`, {stdio: [null, null, null]})
+        return SearchMethods.DDGR;
     } catch(e) {
-        try {
-            child_process.execSync(`which ${SearchMethods.DDGR}`, {stdio: [null, null, null]})
-            return SearchMethods.DDGR;
-        } catch(e) {
-            console.error(`To make rofi-search work with default configuration, please install either ddgr - https://github.com/jarun/ddgr or googler - https://github.com/jarun/googler`);
-            process.exit(1);
-        }
-    };
+        console.error(`To make rofi-search work with default configuration, please install ddgr - https://github.com/jarun/ddgr`);
+        process.exit(1);
+    }
 }
 
 /**

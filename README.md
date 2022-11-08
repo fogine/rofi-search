@@ -29,12 +29,11 @@ Dependencies
 * [rofi-blocks](https://github.com/OmarCastro/rofi-blocks) (`rofi-blocks-git` package in AUR)
 * [rofi](https://github.com/DaveDavenport/rofi/)
 * `xclip` copy to clipboard
-* [googler](https://github.com/jarun/googler) *(optional)*  google search results scraper
 * [ddgr](https://github.com/jarun/ddgr) *(optional)*  DuckDuckGo search results scraper
 
 HOW TO RUN
 -------------------
-Simply execute `rofi-search` in terminal (needs `googler` or `ddgr` dependency to be installed).  
+Simply execute `rofi-search` in terminal (needs `ddgr` dependency to be installed).  
 Or see **Usage** section bellow for more advanced use cases.
 
 Usage
@@ -43,9 +42,6 @@ Usage
 You can choose between multiple methods of getting search results. Each one will give slightly different results.  
 You can even let `rofi-search` combine search results from multiple search engines.
 
-- Use [googler](https://github.com/jarun/googler) for scraping Google for search results
-    - `googler` does not parse information about number of search results
-        so this information is not currently available when using this method
 - Use [ddgr](https://github.com/jarun/ddgr) for scraping DuckDuckGo for search results
     - `ddgr` does not parse information about number of search results
         so this information is not currently available when using this method
@@ -73,11 +69,11 @@ rofi -modi blocks -blocks-wrap /absolute/path/to/rofi-search -show blocks \
 -lines 4 -eh 4 -kb-custom-1 'Control+y' -theme /path/to/your/theme.rasi
 ``` 
 
-##### googler
+##### ddgr
 ```bash
-#for additional googler options see "googler --help"
-export GOOGLE_ARGS='["--count", 5]'
-export ROFI_SEARCH='googler'
+#for additional ddgr options see "ddgr --help"
+export DDG_ARGS='["-n", 5]'
+export ROFI_SEARCH='ddgr'
 
 rofi -modi blocks -blocks-wrap /absolute/path/to/rofi-search -show blocks \ 
 -lines 4 -eh 4 -kb-custom-1 'Control+y' -theme /path/to/your/theme.rasi 
@@ -86,24 +82,22 @@ rofi -modi blocks -blocks-wrap /absolute/path/to/rofi-search -show blocks \
 ##### combine top free results from DuckDuckGo and Google
 ```bash
 export DDG_ARGS='["-n", 3]'
-export GOOGLE_ARGS='["--count", 3]'
-export ROFI_SEARCH='googler,ddgr' #or 'cse,ddgr'
+export ROFI_SEARCH='cse,ddgr'
 
 rofi -modi blocks -blocks-wrap /absolute/path/to/rofi-search -show blocks \ 
 -lines 4 -eh 4 -kb-custom-1 'Control+y' -theme /path/to/your/theme.rasi
 ``` 
 
-You can fetch rofi theme used in the gif preview [HERE](https://github.com/fogine/rofi-search/blob/master/theme.rasi)  
+You can fetch rofi theme used in the gif preview [HERE](https://gist.github.com/fogine/b79bfdbf48ec70c698c977c13043b816)  
 
 
 Options
 -----------
 - `GOOGLE_API_KEY` - secret key to access Google API. You can get it [here](https://developers.google.com/custom-search/v1/introduction#identify_your_application_to_google_with_api_key)
 - `GOOGLE_SEARCH_ID` - Your custom search engine (cse) ID
-- `GOOGLE_ARGS` - `googler` command line arguments. Serialized json array.
 - `DDG_ARGS` - `ddgr` command line arguments. Serialized json array.
 - `ROFI_SEARCH` - comma separated search methods
-    - Supported methods: `cse`,`googler`,`ddgr`
+    - Supported methods: `cse`, `ddgr`
     - If multiple methods are set, `rofi-search` will make multiple parallel searches
     and combine search results in the order search methods were defined
 - `TITLE_COLOR` - customize search result title color (default blue).
