@@ -1,5 +1,5 @@
 # rofi-search
-Interactive web search via [rofi](https://github.com/DaveDavenport/rofi/).  
+Interactive web search via [rofi](https://github.com/davatorium/rofi).  
 Multiple search engines supported.
 
 [![Preview](https://github.com/fogine/rofi-search/blob/master/rofi-search.gif)](https://raw.githubusercontent.com/fogine/rofi-search/master/rofi-search.gif)
@@ -27,14 +27,14 @@ Dependencies
 -------------------
 * `nodejs >= 8.2.1`
 * [rofi-blocks](https://github.com/OmarCastro/rofi-blocks) (`rofi-blocks-git` package in AUR)
-* [rofi](https://github.com/DaveDavenport/rofi/)
+* [rofi](https://github.com/davatorium/rofi)
 * `xclip` copy to clipboard
 * [ddgr](https://github.com/jarun/ddgr) *(optional)*  DuckDuckGo search results scraper
 
 HOW TO RUN
 -------------------
 Simply execute `rofi-search` in terminal (needs `ddgr` dependency to be installed).  
-Or see **Usage** section bellow for more advanced use cases.
+Or see the **Usage** section below for more advanced use cases.
 
 Usage
 ------------------
@@ -47,8 +47,10 @@ You can even let `rofi-search` combine search results from multiple search engin
         so this information is not currently available when using this method
 - Use google's custom search engine API by setting `GOOGLE_API_KEY` & `GOOGLE_SEARCH_ID` env variables
 
-    - It can Search the entire web if you enable it in settings
-    - You will need to go to [https://cse.google.com/cse/all](https://cse.google.com/cse/all) and create your own google custom search engine.
+    - **NOTE:** Google has closed the Custom Search JSON API to new customers and plans to shut it down for existing ones on January 1, 2027.
+        The "Search the entire web" option is also no longer offered for newly created engines.
+        If you don't already have API access, use the `ddgr` method instead.
+    - You will need to go to the [Programmable Search Engine control panel](https://programmablesearchengine.google.com/controlpanel/all) and create your own search engine.
         - Get `Search engine ID` from the settings panel  
          ![Preview](https://github.com/fogine/rofi-search/blob/master/search_engine_key.png)
 
@@ -65,9 +67,9 @@ export GOOGLE_API_KEY='google-api-key'
 export GOOGLE_SEARCH_ID='google-search-engine-id'
 export ROFI_SEARCH='cse'
 
-rofi -modi blocks -blocks-wrap /absolute/path/to/rofi-search -show blocks \ 
+rofi -modi blocks -blocks-wrap /absolute/path/to/rofi-search -show blocks \
 -lines 4 -eh 4 -kb-custom-1 'Control+y' -theme /path/to/your/theme.rasi
-``` 
+```
 
 ##### ddgr
 ```bash
@@ -75,18 +77,18 @@ rofi -modi blocks -blocks-wrap /absolute/path/to/rofi-search -show blocks \
 export DDG_ARGS='["-n", 5]'
 export ROFI_SEARCH='ddgr'
 
-rofi -modi blocks -blocks-wrap /absolute/path/to/rofi-search -show blocks \ 
--lines 4 -eh 4 -kb-custom-1 'Control+y' -theme /path/to/your/theme.rasi 
-``` 
+rofi -modi blocks -blocks-wrap /absolute/path/to/rofi-search -show blocks \
+-lines 4 -eh 4 -kb-custom-1 'Control+y' -theme /path/to/your/theme.rasi
+```
 
-##### combine top free results from DuckDuckGo and Google
+##### combine top three results from DuckDuckGo and Google
 ```bash
 export DDG_ARGS='["-n", 3]'
 export ROFI_SEARCH='cse,ddgr'
 
-rofi -modi blocks -blocks-wrap /absolute/path/to/rofi-search -show blocks \ 
+rofi -modi blocks -blocks-wrap /absolute/path/to/rofi-search -show blocks \
 -lines 4 -eh 4 -kb-custom-1 'Control+y' -theme /path/to/your/theme.rasi
-``` 
+```
 
 You can fetch rofi theme used in the gif preview [HERE](https://gist.github.com/fogine/b79bfdbf48ec70c698c977c13043b816)  
 
@@ -116,6 +118,6 @@ Options
 
 #### TODO (PR is welcome)
 
-- [x] ~~DuckDuckGO integration~~
+- [x] ~~DuckDuckGo integration~~
 - [ ] make font sizes configurable
 - [ ] [buku](https://github.com/jarun/buku) integration
